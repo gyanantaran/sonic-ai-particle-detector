@@ -11,7 +11,7 @@ import random
 
 # HARDCODING
 container = Container()
-balls = [Ball((random.randint(400, 600), random.randint(400, 600)), (50, 0)) for _ in range(GAME_DEFAULT_BALLS)]
+balls = [Ball((random.randint(400, 600), random.randint(400, 600)), (0, 0)) for _ in range(GAME_DEFAULT_BALLS)]
 collision_data = []
 
 class Game:
@@ -42,6 +42,7 @@ class Game:
 
             self.screen.fill(GAME_DEFAULT_SCREEN_COLOR)
 
+            container.update(self.dt)
             container.draw(self.screen)
 
             # On top of the container
