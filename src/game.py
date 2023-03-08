@@ -11,7 +11,8 @@ import random
 
 # HARDCODING
 container = Container()
-balls = [Ball((200, 200)) for _ in range(GAME_DEFAULT_BALLS)]
+balls = [Ball((random.randint(400, 600), random.randint(400, 600)), (50, 0)) for _ in range(GAME_DEFAULT_BALLS)]
+collision_data = []
 
 class Game:
     """This class represents the game instances
@@ -36,19 +37,19 @@ class Game:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.game_running = False
+                    print(collision_data)
                     self.quit(reason="Manual quit")
 
             self.screen.fill(GAME_DEFAULT_SCREEN_COLOR)
-
 
             container.draw(self.screen)
 
             # On top of the container
             for ball in balls:
-                ball.update()
+                ball.update(self.dt)
                 ball.draw(self.screen)
 
-            print(container.returnBallCollide(balls[0]))
+                container.collisionPhysics(ball, collision_data)
 
             pygame.display.flip()
 

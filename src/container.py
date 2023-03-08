@@ -1,10 +1,12 @@
 
 import pygame
 
-from src.constants import CONTAINER_DEFAULT_RADIUS, CONTAINER_DEFAULT_THICKNESS, CONTAINER_DEFAULT_CENTER, CONTAINER_DEFAULT_COLOR, GAME_DEFAULT_SCREEN_COLOR
+from src.constants import CONTAINER_DEFAULT_RADIUS, CONTAINER_DEFAULT_THICKNESS, CONTAINER_DEFAULT_CENTER, CONTAINER_DEFAULT_COLOR, GAME_DEFAULT_SCREEN_COLOR, CONTAINER_DEFAULT_VELOCITY
 from src.utils import distance
 
 from src.ball import Ball
+
+import numpy
 
 
 class Container:
@@ -26,6 +28,7 @@ class Container:
                                         Defaults to CONTAINER_DEFAULT_THICKNESS.
         """
         self.x, self.y = CONTAINER_DEFAULT_CENTER  # Does not update anywhere
+        self.vx, self.vy = CONTAINER_DEFAULT_VELOCITY # Does not update anywhere
 
         self.radius = radius
         self.thickness = thickness
@@ -38,8 +41,12 @@ class Container:
         self.color = CONTAINER_DEFAULT_COLOR
 
 
+    def center(self):
+        return (self.x, self.y)
+
+
     def draw(self, screen: pygame.Surface) -> None:
-        """Draws the barrier on the screen
+        """Draws the barrier on the screen by drawing white on grey circle
 
         Args:
             screen (pygame.Surface): The screen to draw on
@@ -62,12 +69,18 @@ class Container:
                 width=0
             )
 
-    def update(self) -> None:
-        """Does not do anything whatsoever
-        """
-        pass
 
-    def returnBallCollide(self, ball: Ball) -> bool:
+    def update(self, dt: float) -> None:
+        """Does not do anything whatsoever
+
+        Args:
+            dt (float): The delta time
+        """
+        self.x += self.vx * dt
+        self.y += self.vy * dt
+
+
+    def returnBallCollision(self, ball: Ball) -> bool:
         """For spatial locality. That is, the balls would be different.
 
         Args:
@@ -77,11 +90,42 @@ class Container:
             bool: True if collision
         """
         collision = False
-        if (distance(self.center(), ball.center()) + ball.radius) >= self.innerRadius:
+
+        d = distance(self.center(), ball.center())
+        if ((d + ball.radius) >= self.innerRadius) and ((d - ball.radius) <= self.outerRadius):
             collision = True
 
         return collision
 
 
-    def center(self):
-        return CONTAINER_DEFAULT_CENTER
+    def collisionPhysics(self, ball: Ball, audio_lst: list):
+        """Works on collision occurrences to save audio and change state of ball
+
+        Args:
+            ball (Ball): The ball to check collision against
+            audio_lst (list): The list to append collision data(audio) to
+        """
+
+        # first check collision
+        if (self.returnBallCollision(ball) == False):
+            # HARDCODE ALERT!!!
+            audio_lst.append(0)
+            pass
+
+        else:
+            dx = (ball.x - self.x)
+            dy = (ball.y - self.y)
+            d = (dx ** 2 + dy ** 2) ** (0.5)
+
+            r_cap = (dx / d, dy / d)
+
+            v_rel = (ball.vx - self.vx, ball.vy - self.vy)
+            v_rel_dot_r_cap = (v_rel[0] * r_cap[0] + v_rel[1] * r_cap[1])
+
+            v_par = (v_rel_dot_r_cap * r_cap[0], v_rel_dot_r_cap * r_cap[1])
+            v_new = (v_rel[0] - 2 * v_par[0], v_rel[1] - 2 * v_par[1])
+
+            ball.vx, ball.vy = v_new
+
+            # HARDCODE ALERT!!!
+            audio_lst.append(1)

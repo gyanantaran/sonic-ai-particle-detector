@@ -10,14 +10,17 @@ class Ball:
     """
 
 
-    def __init__(self, position: Tuple[int, int], radius: int = BALL_DEFAULT_RADIUS):
+    def __init__(self, x: Tuple[int, int], v: Tuple[int, int], radius: int = BALL_DEFAULT_RADIUS):
         """Initializes a ball
 
         Args:
-            position (Tuple[int, int]): The position of the ball
+            x (Tuple[int, int]): The position of the ball
+            v (Tuple[int, int]): The velocity of the ball
             radius (int, optional): The radius of the ball
         """
-        self.x, self.y = position
+        self.x, self.y = x
+        self.vx, self.vy = v
+
         self.radius = radius
 
         # Appearance
@@ -39,11 +42,14 @@ class Ball:
             )
 
 
-    def update(self) -> None:
+    def update(self, dt: float) -> None:
         """Does nothing
+
+        Args:
+            dt (float): The delta time, from the last frame update
         """
-        self.x += 1
-        self.y += 1
+        self.x += self.vx * dt
+        self.y += self.vy * dt
 
     def center(self):
         """Returns the center (x, y) of the ball
