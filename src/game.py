@@ -8,11 +8,14 @@ from src.constants import GAME_DEFAULT_BALLS, GAME_DEFAULT_SCREEN_COLOR, GAME_DE
 from src.utils import distance
 
 import random
+import os
 
 # HARDCODING
 container = Container()
 balls = [Ball((random.randint(400, 600), random.randint(400, 600)), (0, 0)) for _ in range(GAME_DEFAULT_BALLS)]
 collision_data = []
+audio = "./assets/audio"
+
 
 class Game:
     """This class represents the game instances
@@ -22,6 +25,8 @@ class Game:
         """Generates a new Game object
         """
         pygame.init()
+        self.hit_sound = pygame.mixer.Sound(os.path.join(audio, 'hit-short.wav'))
+
         self.game_running = True
         self.clock = pygame.time.Clock()
 
@@ -50,7 +55,10 @@ class Game:
                 ball.update(self.dt)
                 ball.draw(self.screen)
 
-                container.collisionPhysics(ball, collision_data)
+                collision = container.collisionPhysics(ball)
+                if collision:
+                    self.hit_sound.play()
+
 
             pygame.display.flip()
 

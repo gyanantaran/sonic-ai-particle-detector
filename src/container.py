@@ -76,6 +76,10 @@ class Container:
         Args:
             dt (float): The delta time
         """
+        # HARDCODE:
+        if 800 < self.x or self.x < 200:
+            self.vx *= -1
+
         self.x += self.vx * dt
         self.y += self.vy * dt
 
@@ -98,18 +102,19 @@ class Container:
         return collision
 
 
-    def collisionPhysics(self, ball: Ball, audio_lst: list):
+    def collisionPhysics(self, ball: Ball) -> bool:
         """Works on collision occurrences to save audio and change state of ball
 
         Args:
             ball (Ball): The ball to check collision against
-            audio_lst (list): The list to append collision data(audio) to
+
+        Returns:
+            bool: True if collision
         """
 
         # first check collision
         if (self.returnBallCollision(ball) == False):
-            # HARDCODE ALERT!!!
-            audio_lst.append(0)
+            return False
             pass
 
         else:
@@ -122,10 +127,9 @@ class Container:
             v_rel = (ball.vx - self.vx, ball.vy - self.vy)
             v_rel_dot_r_cap = (v_rel[0] * r_cap[0] + v_rel[1] * r_cap[1])
 
-            v_par = (v_rel_dot_r_cap * r_cap[0], v_rel_dot_r_cap * r_cap[1])
-            v_new = (v_rel[0] - 2 * v_par[0], v_rel[1] - 2 * v_par[1])
+            v_rad = (v_rel_dot_r_cap * r_cap[0], v_rel_dot_r_cap * r_cap[1])
+            v_new = (ball.vx - 2 * v_rad[0], ball.vy - 2 * v_rad[1])
 
             ball.vx, ball.vy = v_new
 
-            # HARDCODE ALERT!!!
-            audio_lst.append(1)
+            return True

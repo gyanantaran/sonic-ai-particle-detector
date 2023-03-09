@@ -4,7 +4,7 @@ Using a self-made AI model to accurately count the number of particles in a cont
 
 ## Introduction
 
-This project aims to accurately determine the number of particles in a container by analyzing the audio signal generated from collisions between the particles and the container walls. To accomplish this, an artificial intelligence (AI) model will be developed that is trained on the audio data to recognize different sound patterns corresponding to different numbers of particles. By using the AI model, we hope to accurately count the number of particles in a container and provide a more efficient and reliable method for particle detection.
+This project aims to accurately determine the number of particles in a container by analyzing the audio signal generated from collisions between the particles and the container walls. To accomplish this, an artificial intelligence (AI) model will be developed that is trained on the audio data to recognize different sound patterns corresponding to different numbers of particles. The particle types may also be different, but the aim primarily is to determine the number of particles agnostic of the types. Although it worth noting here that the problem of determing the exact number of particles of a given type is even more exciting and challenging. In short, by using the AI model, we hope to accurately count the number of particles in a container from in an audio clip of a simulation of particles inside a container. The areas of appplication of this work, the author -- because of his limited but growing knowledge in mathematics -- is unsure of.
 
 ## Libraries
 
@@ -65,3 +65,10 @@ python main.py
 - Add different types of entities (e.g., squares, triangles).
 - Implement gravity and friction.
 - Add audio effects on collisions.
+
+
+## Design Desicions
+
+1. The simulation phase was going through a terrible problem. An obvious glitch in the system allowed particles inside a container to jump off from the container when their velocities is sufficiently high. This was because the delta time between frame renderings is pretty much the same, but if(because of the shaking of the container) particles gain speed, then the delta position may become greater than the thickness of the container. To tackle this problem, no trivial solutions are coming to the author's mind. One solution is to check wether the line connecting the next position and this position intersect the container. This would then allow the author to handel this bug through and through with a hit on performance. The other solution is to keep the framerate high enough and velocities moderate.
+
+
